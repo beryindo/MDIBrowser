@@ -97,17 +97,4 @@ object ChildForm: TChildForm
     Left = 40
     Top = 184
   end
-  object Timer1: TTimer
-    Enabled = False
-    Interval = 300
-    Left = 32
-    Top = 280
-  end
-  object NetHTTPClient1: TNetHTTPClient
-    AllowCookies = True
-    HandleRedirects = True
-    UserAgent = 'Embarcadero URI Client/1.0'
-    Left = 440
-    Top = 112
-  end
 end

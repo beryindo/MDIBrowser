@@ -9,9 +9,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, System.Types, Vcl.ComCtrls, Vcl.ClipBrd,
   System.UITypes,
   uMainForm, uCEFChromium, uCEFWindowParent, uCEFInterfaces, uCEFConstants, uCEFTypes,
-  uCEFWinControl, uCEFCookieManager, uCEFCookieVisitor, uCefStringMultimap,
-  System.Net.URLClient, System.Net.HttpClient, System.Net.HttpClientComponent,
-  Data.DB, MemDS, DBAccess, Uni;
+  uCEFWinControl, uCEFCookieManager, uCEFCookieVisitor, uCefStringMultimap;
 
 const
   CEFBROWSER_CONTEXTMENU_DELETECOOKIES = MENU_ID_USER_FIRST + 1;
@@ -27,8 +25,6 @@ type
     CEFWindowParent1: TCEFWindowParent;
     StatusBar1: TStatusBar;
     Memo1: TMemo;
-    Timer1: TTimer;
-    NetHTTPClient1: TNetHTTPClient;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Chromium1AfterCreated(Sender: TObject; const browser: ICefBrowser);
     procedure Button1Click(Sender: TObject);
@@ -66,6 +62,7 @@ type
     procedure WMExitMenuLoop(var aMessage: TMessage); message WM_EXITMENULOOP;
     procedure AddCookieInfo(const aCookie : TCookie);
     procedure ShowCookiesMsg(var aMessage : TMessage); message CEFBROWSER_SHOWCOOKIES;
+    procedure Button2Click(Sender: TObject);
   private
 
   protected
@@ -134,6 +131,16 @@ end;
 procedure TChildForm.Button1Click(Sender: TObject);
 begin
   Chromium1.LoadURL(Edit1.Text);
+end;
+
+procedure TChildForm.Button2Click(Sender: TObject);
+var
+  TempManager : ICefCookieManager;
+begin
+//    FText := '';
+    TempManager := TCefRequestContextRef.Global.GetDefaultCookieManager(nil);
+    TempManager.VisitAllCookies(FVisitor);
+    Memo1.Lines.Text := FText;
 end;
 
 function Explode(const str: string; const separator: string): TStrings;
@@ -209,14 +216,14 @@ end;
 procedure TChildForm.Chromium1LoadEnd(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; httpStatusCode: Integer);
 var
-  cookiemanag : ICefCookieManager;
+  TempManager : ICefCookieManager;
+  NewChildContext : ICefRequestContext;
 begin
-
   if Pos('google.com',frame.Url) <>0 then
   begin
     FText := '';
-    cookiemanag := TCefCookieManagerRef.Global(nil);
-    cookiemanag.VisitAllCookies(FVisitor);
+    TempManager := NewChildContext.GetDefaultCookieManager(nil);
+    TempManager.VisitAllCookies(FVisitor);
     Memo1.Lines.Text := FText;
   end;
 end;
